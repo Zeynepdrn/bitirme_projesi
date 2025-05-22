@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+input, button, textarea, select {
+  font-family: inherit;
+}
+
+/* Responsive tasarım için media query'ler */
+@media (max-width: 992px) {
+  .layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+  
+  .content-area {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .group-create-container,
+  .project-topics-container,
+  .project-suggestion-container,
+  .preference-list-container,
+  .my-group-container {
+    padding: 20px;
+  }
+  
+  .instructors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .section-container {
+    min-width: 100%;
+  }
+  
+  .preferences-table,
+  .project-list {
+    font-size: 14px;
+  }
+} 
