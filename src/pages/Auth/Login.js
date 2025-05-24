@@ -18,9 +18,16 @@ const Login = () => {
     setLoading(true);
 
     try {
-      if (email === "admin@admin.com" && password === "123456") {
-        navigate('/admin');
-        return;
+      // Admin bilgilerini Firebase'den kontrol et
+      const adminDocRef = doc(db, 'admin_info', 'admin');
+      const adminDoc = await getDoc(adminDocRef);
+      
+      if (adminDoc.exists()) {
+        const adminData = adminDoc.data();
+        if (email === adminData.admin_mail && password === adminData.admin_pass) {
+          navigate('/admin');
+          return;
+        }
       }
 
       const teacherDocRef = doc(db, 'ogretmenler', email);
