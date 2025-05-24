@@ -10,10 +10,23 @@ const StudentPreferences = () => {
   const [projectErrors, setProjectErrors] = useState({});
   const [canApproveProjects, setCanApproveProjects] = useState(true);
   const [deadlineMessage, setDeadlineMessage] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    checkDeadline();
-    fetchData();
+    const initialize = async () => {
+      try {
+        await checkDeadline();
+        await fetchData();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setProjectErrors({ global: 'Veri yüklenirken bir hata oluştu.' });
+      } finally {
+        setIsInitialized(true);
+        setLoading(false);
+      }
+    };
+    
+    initialize();
   }, []);
 
   const checkDeadline = async () => {
@@ -230,94 +243,105 @@ const StudentPreferences = () => {
     }
   };
 
-  if (loading) {
-    return <div className="loading">Yükleniyor...</div>;
+  if (loading || !isInitialized) {
+    return (
+      <TeacherLayout>
+        <div className="container">
+          <div className="section-container">
+            <div className="section-title">Öğrenci Tercihleri</div>
+            <div className="loading-message">Yükleniyor...</div>
+          </div>
+        </div>
+      </TeacherLayout>
+    );
   }
 
   return (
     <TeacherLayout>
-      <div className="student-preferences-container">
-        <h2 className="section-title">Öğrenci Tercihleri</h2>
-        {projectErrors.global && <div className="error-message">{projectErrors.global}</div>}
-        
-        {!canApproveProjects && (
-          <div className="deadline-warning">
-            {deadlineMessage}
-          </div>
-        )}
-        
-        {canApproveProjects && (
-          <div className="deadline-info">
-            {deadlineMessage}
-          </div>
-        )}
-        
-        {projects.length === 0 ? (
-          <div className="no-data-container">
-            <div className="no-data-message">Henüz gönderilmiş proje tercihi bulunmamaktadır.</div>
-          </div>
-        ) : (
-          projects.map((project) => (
-            <div key={project.id} className="project-section">
-              <div className="project-title-banner">
-                {project.title}
-              </div>
-              {projectErrors[project.id] && (
-                <div className="warning-message">
-                  {projectErrors[project.id]}
+      <div className="container">
+        <div className="section-container">
+          <h2 className="section-title">Öğrenci Tercihleri</h2>
+          {projectErrors.global && <div className="error-message">{projectErrors.global}</div>}
+          
+          {!canApproveProjects && (
+            <div className="deadline-warning">
+              {deadlineMessage}
+            </div>
+          )}
+          
+          {canApproveProjects && (
+            <div className="deadline-info">
+              {deadlineMessage}
+            </div>
+          )}
+          
+          {projects.length === 0 ? (
+            <div className="no-data-container">
+              <div className="no-data-message">Henüz gönderilmiş proje tercihi bulunmamaktadır.</div>
+            </div>
+          ) : (
+            projects.map((project) => (
+              <div key={project.id} className="project-section">
+                <div className="project-title-banner">
+                  {project.title}
                 </div>
-              )}
-              <div className="groups-list">
-                {project.groups.map((group) => (
-                  <div key={group.id} className="group-item">
-                    <div className="group-details">
-                      <div className="group-id">{group.groupCode}</div>
-                      <div className="group-members">
-                        {group.members.map((member, index) => (
-                          <div key={index} className="member-name">
-                            {member.displayName || member.email}
-                          </div>
-                        ))}
-                      </div>
-                      {group.isAutoAssigned && (
-                        <div className="auto-assigned-badge">
-                          Otomatik Atandı {group.autoAssignedAt?.toLocaleString('tr-TR')}
+                {projectErrors[project.id] && (
+                  <div className="warning-message">
+                    {projectErrors[project.id]}
+                  </div>
+                )}
+                <div className="groups-list">
+                  {project.groups.map((group) => (
+                    <div key={group.id} className="group-item">
+                      <div className="group-details">
+                        <div className="group-id">{group.groupCode}</div>
+                        <div className="group-members">
+                          {group.members.map((member, index) => (
+                            <div key={index} className="member-name">
+                              {member.displayName || member.email}
+                            </div>
+                          ))}
                         </div>
+                        {group.isAutoAssigned && (
+                          <div className="auto-assigned-badge">
+                            Otomatik Atandı {group.autoAssignedAt?.toLocaleString('tr-TR')}
+                          </div>
+                        )}
+                      </div>
+                      {group.status === 'approved' ? (
+                        <div className="status-section">
+                          <div className="status-badge approved">
+                            ONAYLANDI
+                          </div>
+                          <div 
+                            className="status-badge revoke"
+                            onClick={() => handleRevokeApproval(group.id, group.preferenceId, project.id)}
+                            style={{ 
+                              cursor: canApproveProjects ? 'pointer' : 'not-allowed',
+                              backgroundColor: canApproveProjects ? '#ffebee' : '#f5f5f5',
+                              color: canApproveProjects ? '#c62828' : '#9e9e9e',
+                              border: 'none'
+                            }}
+                          >
+                            İPTAL ET
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          className="approve-button"
+                          onClick={() => handleApprove(group.id, group.preferenceId, project.id)}
+                          disabled={!canApproveProjects}
+                        >
+                          ONAYLA
+                        </button>
                       )}
                     </div>
-                    {group.status === 'approved' ? (
-                      <div className="status-section">
-                        <div className="status-badge approved">
-                          ONAYLANDI
-                        </div>
-                        <div 
-                          className="status-badge revoke"
-                          onClick={() => handleRevokeApproval(group.id, group.preferenceId, project.id)}
-                          style={{ 
-                            cursor: canApproveProjects ? 'pointer' : 'not-allowed',
-                            backgroundColor: canApproveProjects ? '#ffebee' : '#f5f5f5',
-                            color: canApproveProjects ? '#c62828' : '#9e9e9e',
-                            border: 'none'
-                          }}
-                        >
-                          İPTAL ET
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        className="approve-button"
-                        onClick={() => handleApprove(group.id, group.preferenceId, project.id)}
-                        disabled={!canApproveProjects}
-                      >
-                        ONAYLA
-                      </button>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </TeacherLayout>
   );

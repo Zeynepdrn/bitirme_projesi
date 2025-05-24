@@ -19,6 +19,7 @@ const ProjectSuggestion = () => {
   const [deadlineMessage, setDeadlineMessage] = useState('');
   const [suggestionStatus, setSuggestionStatus] = useState(null);
   const [charactersRemaining, setCharactersRemaining] = useState(50);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,6 +67,7 @@ const ProjectSuggestion = () => {
         console.error('Error in fetchData:', err);
         setError('Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyip tekrar deneyin.');
       } finally {
+        setIsInitialized(true);
         setLoading(false);
       }
     };
@@ -481,6 +483,19 @@ const ProjectSuggestion = () => {
     }
   };
 
+  if (loading || !isInitialized) {
+    return (
+      <StudentLayout>
+        <div className="container">
+          <div className="section-container">
+            <div className="section-title">Proje Önerisi</div>
+            <div className="loading-message">Yükleniyor...</div>
+          </div>
+        </div>
+      </StudentLayout>
+    );
+  }
+
   return (
     <StudentLayout>
       <div className="project-suggestion-container">
@@ -522,7 +537,7 @@ const ProjectSuggestion = () => {
         
         {groupData && groupData.preferencesStatus === 'submitted' && (
           <div className="warning-message">
-            Onaya gönderilmiş projeniz bulunmaktadır.
+            Onaya gönderilmiş proje tercihiniz bulunmaktadır. Yeni öneri gönderemezsiniz.
           </div>
         )}
         
@@ -593,11 +608,7 @@ const ProjectSuggestion = () => {
                       type="checkbox"
                       id={`instructor-${instructor.id}`}
                       checked={selectedInstructors.includes(instructor.id)}
-                      onChange={() => {
-                        if (canSubmit && userData?.isGroupLeader && (!groupData?.members || groupData.members.length >= 2) && groupData?.preferencesStatus !== 'submitted') {
-                          toggleInstructorSelection(instructor.id);
-                        }
-                      }}
+                      onChange={() => {}}
                       disabled={!canSubmit || !userData?.isGroupLeader || (groupData?.members && groupData.members.length < 2) || groupData?.preferencesStatus === 'submitted'}
                     />
                     <label htmlFor={`instructor-${instructor.id}`}>

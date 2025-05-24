@@ -294,6 +294,13 @@
   font-size: 14px;
 }
 
+.approved-project-date {
+  color: #2e7d32;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
 .auto-assigned-project-container {
   background-color: #e3f2fd;
   border-radius: 5px;
@@ -331,4 +338,73 @@
   font-size: 14px;
   font-weight: 500;
   margin-top: 5px;
-} 
+}
+
+.submitted-projects-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.submitted-projects-header {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.submitted-projects-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.toggle-icon.open {
+  transform: rotate(180deg);
+}
+
+.submission-date {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.preferences-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+}
+
+.preferences-table th,
+.preferences-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.preferences-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.preferences-table tr:last-child td {
+  border-bottom: none;
+}
+
+.preferences-table tr:hover {
+  background-color: #f8f9fa;
+}

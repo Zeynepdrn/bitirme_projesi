@@ -28,7 +28,7 @@ const AdminLayout = ({ children, userType }) => {
         </div>
         <nav className="admin-menu">
           <button onClick={() => navigate('/admin/teacher-add')}>
-            <FaUserPlus /> Öğretim Üyesi Ekle
+            <FaUserPlus /> Öğretim Üyeleri
           </button>
           <button onClick={() => navigate('/admin/dates')}>
             <FaCalendarAlt /> İşlem Tarihlerini Belirle

@@ -97,10 +97,8 @@ function App() {
     );
   }
 
-  // Email doğrulama kontrolü
   const handleProtectedRoute = (requiredRole, component) => {
     if (!user) return <Navigate to="/login" />;
-
     if (userType === 'unverified') {
       return <EmailVerificationWaiting />;
     }

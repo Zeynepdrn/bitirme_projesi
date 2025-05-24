@@ -15,6 +15,8 @@ const ProjectTopics = () => {
   const [deadlineMessage, setDeadlineMessage] = useState('');
   const [approvedProject, setApprovedProject] = useState(null);
   const [suggestionStatus, setSuggestionStatus] = useState(null);
+  const [lastSelectedProjectId, setLastSelectedProjectId] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
  
   useEffect(() => {
     const initialize = async () => {
@@ -32,6 +34,7 @@ const ProjectTopics = () => {
         console.error('Initialization error:', err);
         setError('Veri yüklenirken bir hata oluştu.');
       } finally {
+        setIsInitialized(true);
         setLoading(false);
       }
     };
@@ -199,6 +202,7 @@ const ProjectTopics = () => {
       setError('');
       setSuccess('');
       setLoading(true);
+      setLastSelectedProjectId(projectId);
 
       const user = auth.currentUser;
       if (!user) {
@@ -466,10 +470,15 @@ const ProjectTopics = () => {
     }
   };
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <StudentLayout>
-        <div className="loading">Yükleniyor...</div>
+        <div className="container">
+          <div className="section-container">
+            <div className="section-title">Proje Konuları</div>
+            <div className="loading-message">Yükleniyor...</div>
+          </div>
+        </div>
       </StudentLayout>
     );
   }
@@ -511,7 +520,7 @@ const ProjectTopics = () => {
         
         {userGroups.length > 0 && userGroups[0]?.preferencesStatus === 'submitted' && (
           <div className="warning-message">
-            Onaya gönderilmiş projeniz bulunmaktadır.
+            Onaya gönderilmiş proje tercihiniz bulunmaktadır. Proje konusu seçemezsiniz.
           </div>
         )}
         
@@ -562,21 +571,29 @@ const ProjectTopics = () => {
                     <td>{project.description}</td>
                     <td className="text-center">{project.groupCount || 0}</td>
                     <td className="text-center">
-                      <button 
-                        className="select-button"
-                        onClick={() => selectProject(project.id)}
-                        disabled={
-                          !isGroupLeader || 
-                          loading || 
-                          !canSelectProject || 
-                          approvedProject !== null ||
-                          (userGroups.length > 0 && userGroups[0].preferencesStatus === 'submitted') ||
-                          (userGroups.length > 0 && userGroups[0].members && userGroups[0].members.length < 2) ||
-                          (suggestionStatus?.status === 'pending' || suggestionStatus?.status === 'accepted' || suggestionStatus?.status === 'approved')
-                        }
-                      >
-                        SEÇ
-                      </button>
+                      <div className="project-action-container">
+                        <button 
+                          className="select-button"
+                          onClick={() => selectProject(project.id)}
+                          disabled={
+                            !isGroupLeader || 
+                            loading || 
+                            !canSelectProject || 
+                            approvedProject !== null ||
+                            (userGroups.length > 0 && userGroups[0].preferencesStatus === 'submitted') ||
+                            (userGroups.length > 0 && userGroups[0].members && userGroups[0].members.length < 2) ||
+                            (suggestionStatus?.status === 'pending' || suggestionStatus?.status === 'accepted' || suggestionStatus?.status === 'approved')
+                          }
+                        >
+                          SEÇ
+                        </button>
+                        {error && project.id === lastSelectedProjectId && (
+                          <div className="project-error-message">{error}</div>
+                        )}
+                        {success && project.id === lastSelectedProjectId && (
+                          <div className="project-success-message">{success}</div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -598,9 +615,6 @@ const ProjectTopics = () => {
             </div>
           </div>
         )}
-        
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
       </div>
     </StudentLayout>
   );

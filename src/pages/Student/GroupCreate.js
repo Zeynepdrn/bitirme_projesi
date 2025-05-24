@@ -23,7 +23,7 @@ const extractNameFromEmail = (email) => {
 
 const GroupCreate = () => {
   const [groupId, setGroupId] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [generatedGroupId, setGeneratedGroupId] = useState('');
@@ -32,11 +32,21 @@ const GroupCreate = () => {
   const [userHasGroup, setUserHasGroup] = useState(false);
   const [userGroupInfo, setUserGroupInfo] = useState(null);
   const [memberNumbers, setMemberNumbers] = useState({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initialize = async () => {
-      await checkDeadline();
-      await checkUserGroupStatus();
+      setLoading(true);
+      try {
+        await checkDeadline();
+        await checkUserGroupStatus();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError('Sayfa yüklenirken bir hata oluştu.');
+      } finally {
+        setIsInitialized(true);
+        setLoading(false);
+      }
     };
     
     initialize();
@@ -643,6 +653,19 @@ const GroupCreate = () => {
 
   console.log(canCreateGroup);
   console.log(deadlineMessage);
+
+  if (loading || !isInitialized) {
+    return (
+      <StudentLayout>
+        <div className="container">
+          <div className="section-container">
+            <div className="section-title">Grup Oluştur</div>
+            <div className="loading-message">Yükleniyor...</div>
+          </div>
+        </div>
+      </StudentLayout>
+    );
+  }
 
   return (
     <StudentLayout>

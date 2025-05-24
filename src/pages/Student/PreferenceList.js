@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../firebase/config';
 import { collection, doc, getDoc, updateDoc, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import '../../styles/PreferenceList.css';
 import StudentLayout from '../../components/StudentComponents/StudentLayout';
 
@@ -16,6 +17,7 @@ const PreferenceList = () => {
   const [autoAssignedProject, setAutoAssignedProject] = useState(null);
   const [canSelectProject, setCanSelectProject] = useState(true);
   const [suggestionStatus, setSuggestionStatus] = useState(null);
+  const [showSubmittedProjects, setShowSubmittedProjects] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,13 +68,16 @@ const PreferenceList = () => {
               ...projectDoc.data(),
               id: projectDoc.id,
               isAutoAssigned: preference.isAutoAssigned || false,
-              autoAssignedAt: preference.autoAssignedAt?.toDate()
+              autoAssignedAt: preference.autoAssignedAt?.toDate(),
+              approvedAt: preference.approvedAt?.toDate()
             };
             
             if (projectData.isAutoAssigned) {
               setAutoAssignedProject(projectData);
+              setShowSubmittedProjects(false);
             } else {
               setApprovedProject(projectData);
+              setShowSubmittedProjects(false);
             }
           }
         }
@@ -233,7 +238,12 @@ const PreferenceList = () => {
   if (loading) {
     return (
       <StudentLayout>
-        <div className="loading">Yükleniyor...</div>
+        <div className="container">
+          <div className="section-container">
+            <div className="section-title">Tercih Listesi</div>
+            <div className="loading-message">Yükleniyor...</div>
+          </div>
+        </div>
       </StudentLayout>
     );
   }
@@ -257,6 +267,9 @@ const PreferenceList = () => {
                   <div className="approved-project-title">{approvedProject.title}</div>
                   <div className="approved-project-instructor">
                     Öğretim Üyesi: {approvedProject.instructorName || approvedProject.instructorEmail}
+                  </div>
+                  <div className="approved-project-date">
+                    Onaylanma Tarihi: {approvedProject.approvedAt?.toLocaleString('tr-TR')}
                   </div>
                 </div>
               </div>
@@ -289,31 +302,47 @@ const PreferenceList = () => {
             </div>
           ) : groupInfo.preferencesStatus === 'submitted' ? (
             <div className="submitted-projects-container">
-              <h3>Onaya gönderilen projeleriniz:</h3>
-              <table className="preferences-table">
-                <thead>
-                  <tr>
-                    <th className="sira-column">Sıra</th>
-                    <th className="instructor-column">Öğretim Üyesi</th>
-                    <th className="title-column">Proje Adı</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedProjects.map((project, index) => (
-                    <tr key={project.id}>
-                      <td className="sira-column">{index + 1}</td>
-                      <td className="instructor-column">{project.instructorName || project.instructorEmail}</td>
-                      <td className="title-column">{project.title}</td>
+              <div 
+                className="submitted-projects-header"
+                onClick={() => setShowSubmittedProjects(!showSubmittedProjects)}
+                style={{ cursor: 'pointer' }}
+              >
+                <h3>
+                  Onaya gönderilen projeleriniz
+                  <span className="toggle-icon">
+                    {showSubmittedProjects ? <FaChevronUp /> : <FaChevronDown />}
+                  </span>
+                </h3>
+                <div className="submission-date">
+                  Gönderim Tarihi: {groupInfo.preferencesSubmittedAt?.toDate().toLocaleString('tr-TR')}
+                </div>
+              </div>
+              {showSubmittedProjects && (
+                <table className="preferences-table">
+                  <thead>
+                    <tr>
+                      <th className="sira-column">Sıra</th>
+                      <th className="instructor-column">Öğretim Üyesi</th>
+                      <th className="title-column">Proje Adı</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {selectedProjects.map((project, index) => (
+                      <tr key={project.id}>
+                        <td className="sira-column">{index + 1}</td>
+                        <td className="instructor-column">{project.instructorName || project.instructorEmail}</td>
+                        <td className="title-column">{project.title}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
-          ) : selectedProjects.length === 0 ? (
+          ) : selectedProjects.length === 0 && !autoAssignedProject ? (
             <div className="warning-message">
               Henüz proje tercihi yapmadınız. Lütfen proje konuları sayfasından tercihlerinizi yapın.
             </div>
-          ) : (
+          ) : !autoAssignedProject ? (
             <div className="preferences-container">
               <table className="preferences-table">
                 <thead>
@@ -362,11 +391,11 @@ const PreferenceList = () => {
                 )}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </StudentLayout>
   );
 };
 
-export default PreferenceList; 
+export default PreferenceList;

@@ -10,6 +10,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
 }
 
 .admin-logo {
@@ -45,6 +46,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
   border-radius: 5px;
+  white-space: nowrap;
 }
 
 .admin-menu button:hover {
@@ -53,6 +55,7 @@
 
 .admin-menu button svg {
   font-size: 1.2rem;
+  min-width: 20px;
 }
 
 .admin-logout {
@@ -76,4 +79,74 @@
   padding: 30px;
   background-color: #f5f6fa;
   overflow-y: auto;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: 200px;
+  }
+
+  .admin-menu button {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .admin-logo {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+
+  .admin-logo h2 {
+    font-size: 1.2rem;
+  }
+
+  .admin-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .admin-menu button {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .admin-logout {
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-menu {
+    flex-direction: column;
+  }
+
+  .admin-menu button {
+    width: 100%;
+  }
+
+  .admin-content {
+    padding: 10px;
+  }
 } 

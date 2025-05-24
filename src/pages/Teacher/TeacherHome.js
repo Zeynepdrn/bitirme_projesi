@@ -1,10 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TeacherLayout from '../../components/TeacherComponents/TeacherLayout';
 import { FaList, FaUserGraduate, FaRegCommentDots, FaPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { auth, db } from '../../firebase/config';
+import { getDoc, doc } from 'firebase/firestore';
 import '../../styles/TeacherHome.css';
 
 const TeacherHome = () => {
+  const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          setError('Kullanıcı girişi yapılmamış.');
+          return;
+        }
+
+        // Önce öğretmen kontrolü yap
+        const teacherDoc = await getDoc(doc(db, 'ogretmenler', user.email));
+        if (!teacherDoc.exists()) {
+          setError('Bu sayfaya erişim yetkiniz bulunmamaktadır.');
+          return;
+        }
+
+        // Öğretmen ise direkt içeriği göster
+        setIsInitialized(true);
+        setLoading(false);
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError('Veri yüklenirken bir hata oluştu.');
+      }
+    };
+    
+    initialize();
+  }, []);
+
+  // Loading durumunda sadece loading mesajını göster
+  if (loading || !isInitialized) {
+    return (
+      <div className="container">
+        <div className="section-container">
+          <div className="loading-message">Yükleniyor...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Hata durumunda sadece hata mesajını göster
+  if (error) {
+    return (
+      <div className="container">
+        <div className="section-container">
+          <div className="error-message">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal içerik
   return (
     <TeacherLayout>
       <div className="teacher-home-container">

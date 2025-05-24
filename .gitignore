@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+REACT_APP_ADMIN_EMAIL=admin@admin.com
+REACT_APP_ADMIN_PASSWORD=123456

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { setDoc, doc, getDoc } from 'firebase/firestore';
+import { setDoc, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/AdminPanel.css';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 
 const AdminPanel = () => {
   const [firstName, setFirstName] = useState('');
@@ -11,6 +13,9 @@ const AdminPanel = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [teachers, setTeachers] = useState([]);
+  const [loadingTeachers, setLoadingTeachers] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   
   const [groupCreationDeadline, setGroupCreationDeadline] = useState('');
   const [groupCreationTime, setGroupCreationTime] = useState('23:59');
@@ -46,7 +51,18 @@ const AdminPanel = () => {
     if (location.pathname === '/admin/dates') {
       fetchDeadlines();
     }
+    fetchTeachers();
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess('');
+      }, 3000); // 3 saniye sonra mesajı temizle
+
+      return () => clearTimeout(timer); // Component unmount olduğunda timer'ı temizle
+    }
+  }, [success]);
 
   const fetchDeadlines = async () => {
     try {
@@ -107,6 +123,24 @@ const AdminPanel = () => {
     }
   };
   
+  const fetchTeachers = async () => {
+    setLoadingTeachers(true);
+    try {
+      const q = collection(db, 'ogretmenler');
+      const querySnapshot = await getDocs(q);
+      const teachersList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTeachers(teachersList);
+    } catch (err) {
+      console.error('Öğretim üyeleri getirilirken hata:', err);
+      setError('Öğretim üyeleri getirilirken bir hata oluştu.');
+    } finally {
+      setLoadingTeachers(false);
+    }
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -125,17 +159,26 @@ const AdminPanel = () => {
     setLoading(true);
 
     try {
-      await setDoc(doc(db, 'ogretmenler', email), {
+      const newTeacher = {
         displayName: `${firstName} ${lastName}`,
         email: email,
         user_type: 1, 
-        createdAt: new Date()
-      });
+        createdAt: Timestamp.now()
+      };
+
+      await setDoc(doc(db, 'ogretmenler', email), newTeacher);
+
+      // Yeni öğretim üyesini listeye ekle
+      setTeachers(prevTeachers => [{
+        id: email,
+        ...newTeacher
+      }, ...prevTeachers]);
 
       setFirstName('');
       setLastName('');
       setEmail('');
       setSuccess('Öğretim üyesi başarıyla eklendi.');
+      setIsFormOpen(false); // Formu kapat
     } catch (err) {
       console.error('Öğretim üyesi eklenirken hata:', err);
       setError('Öğretim üyesi eklenirken bir hata oluştu: ' + err.message);
@@ -209,56 +252,115 @@ const AdminPanel = () => {
     navigate('/login');
   };
 
+  const handleDeleteTeacher = async (teacherId) => {
+    if (window.confirm('Bu öğretim üyesini silmek istediğinizden emin misiniz?')) {
+      try {
+        await deleteDoc(doc(db, 'ogretmenler', teacherId));
+        setTeachers(prevTeachers => prevTeachers.filter(teacher => teacher.id !== teacherId));
+        setSuccess('Öğretim üyesi başarıyla silindi.');
+      } catch (err) {
+        console.error('Öğretim üyesi silinirken hata:', err);
+        setError('Öğretim üyesi silinirken bir hata oluştu: ' + err.message);
+      }
+    }
+  };
+
   const renderTeacherAddForm = () => (
     <div className="admin-form-container">
-      <h3>Öğretim Üyesi Ekle</h3>
+      <div className="teachers-header">
+        <button 
+          className="add-teacher-button"
+          onClick={() => setIsFormOpen(!isFormOpen)}
+        >
+          {isFormOpen ? 'Formu Kapat' : 'Yeni Öğretim Üyesi Ekle'}
+        </button>
+      </div>
       
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
       
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>İsim</label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="İsim"
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Soyisim</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Soyisim"
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>E-posta</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="ornek.ogretmen@bil.omu.edu.tr"
-            required
-          />
-          <small className="form-hint">OMÜ email adresi (@bil.omu.edu.tr) gereklidir</small>
-        </div>
-        
-        <button
-          type="submit"
-          className="admin-submit-button"
-          disabled={loading}
-        >
-          {loading ? 'KAYIT EDİLİYOR...' : 'KAYDET'}
-        </button>
-      </form>
+      {isFormOpen && (
+        <form onSubmit={handleSubmit} className="teacher-form">
+          <div className="form-group">
+            <label>İsim</label>
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="İsim"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Soyisim</label>
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Soyisim"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>E-posta</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ornek.ogretmen@bil.omu.edu.tr"
+              required
+            />
+            <small className="form-hint">OMÜ email adresi (@bil.omu.edu.tr) gereklidir</small>
+          </div>
+          
+          <button
+            type="submit"
+            className="admin-submit-button"
+            disabled={loading}
+          >
+            {loading ? 'KAYIT EDİLİYOR...' : 'KAYDET'}
+          </button>
+        </form>
+      )}
+
+      <div className="registered-teachers-section">
+        <h3>Kayıtlı Öğretim Üyeleri</h3>
+        {loadingTeachers ? (
+          <div className="loading">Yükleniyor...</div>
+        ) : teachers.length > 0 ? (
+          <table className="teachers-table">
+            <thead>
+              <tr>
+                <th>Ad Soyad</th>
+                <th>Email</th>
+                <th>Kayıt Tarihi</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teachers.map(teacher => (
+                <tr key={teacher.id}>
+                  <td>{teacher.displayName}</td>
+                  <td>{teacher.email}</td>
+                  <td>{teacher.createdAt?.toDate().toLocaleDateString('tr-TR')}</td>
+                  <td>
+                    <button
+                      className="delete-teacher-button"
+                      onClick={() => handleDeleteTeacher(teacher.id)}
+                    >
+                      Sil
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>Henüz kayıtlı öğretim üyesi bulunmamaktadır.</p>
+        )}
+      </div>
     </div>
   );
 

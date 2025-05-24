@@ -55,6 +55,7 @@
 .instructor-option {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .instructor-option input[type="checkbox"] {

@@ -235,8 +235,52 @@ tr:hover {
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .suggestions-table {
+    overflow-x: auto;
+    display: block;
+  }
+
+  .suggestions-table table {
+    min-width: 600px;
+  }
+
   .action-buttons {
     flex-direction: column;
+    gap: 8px;
+  }
+
+  .accept-button, .reject-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.8rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    padding: 0.8rem;
+  }
+
+  .suggestions-table th,
+  .suggestions-table td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .suggestion-content {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .suggestion-date {
+    font-size: 0.8rem;
   }
 }
 

@@ -47,40 +47,34 @@
   width: 100%;
   overflow-x: auto;
   margin-top: 20px;
-  background-color: #fff;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .project-table table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
-  margin-bottom: 0;
-  text-align: left;
-  min-width: 800px; /* Minimum width to prevent table from becoming too narrow */
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.project-table th, 
+.project-table th,
 .project-table td {
   padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  white-space: normal;
-  word-break: break-word;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .project-table th {
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   font-weight: 600;
-  color: #333;
-  text-transform: uppercase;
-  font-size: 14px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  color: #2c3e50;
+  white-space: nowrap;
 }
 
 .project-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: #f8f9fa;
 }
 
 .project-table td {
@@ -123,24 +117,48 @@
   text-align: center;
 }
 
-.select-button {
-  background-color: #222;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
+.project-action-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
-.select-button:hover {
-  background-color: #444;
+.select-button {
+  padding: 8px 16px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.select-button:hover:not(:disabled) {
+  background-color: #34495e;
 }
 
 .select-button:disabled {
-  background-color: #ccc;
+  background-color: #95a5a6;
   cursor: not-allowed;
+}
+
+.project-error-message,
+.project-success-message {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.project-error-message {
+  color: #e74c3c;
+  background-color: #fde8e8;
+}
+
+.project-success-message {
+  color: #27ae60;
+  background-color: #e8f8e8;
 }
 
 .warning-message {
@@ -163,27 +181,24 @@
 
 .approved-project-container {
   margin-top: 30px;
-  background-color: #fff;
+  padding: 20px;
+  background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
 .approved-project-details {
-  padding: 20px;
+  margin-top: 15px;
 }
 
 .approved-project-info h3 {
-  margin-top: 0;
-  color: #0056b3;
-  font-size: 1.5rem;
+  color: #2c3e50;
   margin-bottom: 15px;
 }
 
 .approved-project-info p {
-  margin: 10px 0;
-  line-height: 1.5;
-  color: #555;
+  margin: 8px 0;
+  color: #34495e;
 }
 
 .approved-project-info strong {
@@ -191,10 +206,14 @@
   font-weight: 600;
 }
 
-/* Responsive Design */
+/* Responsive Tasarım */
 @media (max-width: 1024px) {
   .container {
     padding: 1.5rem;
+  }
+
+  .project-table table {
+    min-width: 700px;
   }
 
   .project-table th,
@@ -214,14 +233,14 @@
     padding: 1rem;
   }
 
-  .project-table {
-    margin-top: 15px;
+  .project-table table {
+    min-width: 600px;
   }
 
   .project-table th,
   .project-table td {
-    padding: 8px;
-    font-size: 13px;
+    padding: 10px;
+    font-size: 14px;
   }
 
   .section-title {
@@ -231,15 +250,15 @@
 
   .select-button {
     padding: 6px 12px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .approved-project-info h3 {
-    font-size: 1.3rem;
+    font-size: 16px;
   }
 
   .approved-project-info p {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .warning-message,
@@ -255,10 +274,14 @@
     padding: 0.5rem;
   }
 
+  .project-table table {
+    min-width: 500px;
+  }
+
   .project-table th,
   .project-table td {
-    padding: 6px;
-    font-size: 12px;
+    padding: 8px;
+    font-size: 13px;
   }
 
   .section-title {
@@ -268,11 +291,15 @@
 
   .select-button {
     padding: 5px 10px;
-    font-size: 11px;
+    font-size: 13px;
+  }
+
+  .approved-project-container {
+    padding: 15px;
   }
 
   .approved-project-info h3 {
-    font-size: 1.2rem;
+    font-size: 16px;
   }
 
   .approved-project-info p {

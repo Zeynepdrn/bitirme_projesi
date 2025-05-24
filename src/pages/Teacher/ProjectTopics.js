@@ -33,6 +33,7 @@ const ProjectTopics = () => {
     groupCount: 1
   });
   const [showForm, setShowForm] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const updateInstructorNames = async () => {
     try {
@@ -67,6 +68,7 @@ const ProjectTopics = () => {
         console.error('Initialization error:', err);
         setError('Veri yüklenirken bir hata oluştu.');
       } finally {
+        setIsInitialized(true);
         setLoading(false);
       }
     };
@@ -143,7 +145,7 @@ const ProjectTopics = () => {
     }
   };
 
-  if (loading && projects.length === 0) {
+  if (loading || !isInitialized) {
     return (
       <TeacherLayout>
         <div className="container">

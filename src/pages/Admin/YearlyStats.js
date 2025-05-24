@@ -26,7 +26,7 @@ const YearlyStats = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const collections = ['ogrenciler', 'ogretmenler', 'groups', 'projects'];
+      const collections = ['ogrenciler', 'groups', 'projects'];
       const statsData = {};
 
       for (const collectionName of collections) {
@@ -42,7 +42,6 @@ const YearlyStats = () => {
             if (!statsData[academicYear]) {
               statsData[academicYear] = {
                 ogrenciler: [],
-                ogretmenler: [],
                 groups: [],
                 projects: [],
                 approvedSuggestions: [],
@@ -69,7 +68,6 @@ const YearlyStats = () => {
           if (!statsData[academicYear]) {
             statsData[academicYear] = {
               ogrenciler: [],
-              ogretmenler: [],
               groups: [],
               projects: [],
               approvedSuggestions: [],
@@ -104,7 +102,6 @@ const YearlyStats = () => {
           if (!statsData[academicYear]) {
             statsData[academicYear] = {
               ogrenciler: [],
-              ogretmenler: [],
               groups: [],
               projects: [],
               approvedSuggestions: [],
@@ -123,7 +120,6 @@ const YearlyStats = () => {
           if (!statsData[academicYear]) {
             statsData[academicYear] = {
               ogrenciler: [],
-              ogretmenler: [],
               groups: [],
               projects: [],
               approvedSuggestions: [],
@@ -186,28 +182,6 @@ const YearlyStats = () => {
                   <td>{item.displayName}</td>
                   <td>{item.email}</td>
                   <td>{item.schoolNumber}</td>
-                  <td>{item.createdAt?.toDate().toLocaleDateString('tr-TR')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-
-      case 'ogretmenler':
-        return (
-          <table>
-            <thead>
-              <tr>
-                <th>Ad Soyad</th>
-                <th>Email</th>
-                <th>Kayıt Tarihi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map(item => (
-                <tr key={item.id}>
-                  <td>{item.displayName}</td>
-                  <td>{item.email}</td>
                   <td>{item.createdAt?.toDate().toLocaleDateString('tr-TR')}</td>
                 </tr>
               ))}
@@ -341,11 +315,6 @@ const YearlyStats = () => {
               <div className="stats-section">
                 <h4>Öğrenciler ({stats[year].ogrenciler.length})</h4>
                 {renderCollectionData(stats[year].ogrenciler, 'ogrenciler')}
-              </div>
-
-              <div className="stats-section">
-                <h4>Öğretim Üyeleri ({stats[year].ogretmenler.length})</h4>
-                {renderCollectionData(stats[year].ogretmenler, 'ogretmenler')}
               </div>
 
               <div className="stats-section">

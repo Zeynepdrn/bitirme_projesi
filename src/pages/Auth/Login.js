@@ -18,7 +18,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      if (email === 'admin@admin.com' && password === '123456') {
+      if (email === process.env.REACT_APP_ADMIN_EMAIL && password === process.env.REACT_APP_ADMIN_PASSWORD) {
         navigate('/admin');
         return;
       }

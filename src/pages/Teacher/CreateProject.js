@@ -13,9 +13,21 @@ const CreateProject = () => {
   const [success, setSuccess] = useState('');
   const [canCreateProject, setCanCreateProject] = useState(true);
   const [deadlineMessage, setDeadlineMessage] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    checkDeadline();
+    const initialize = async () => {
+      try {
+        await checkDeadline();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError('Veri yüklenirken bir hata oluştu.');
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+    
+    initialize();
   }, []);
 
   const checkDeadline = async () => {
@@ -99,7 +111,7 @@ const CreateProject = () => {
       setTitle('');
       setDescription('');
       setGroupCount(1);
-      setSuccess('Proje başarıyla oluşturuldu! Proje ID: ' + projectRef.id);
+      setSuccess('Proje başarıyla oluşturuldu.');
     } catch (err) {
       console.error('Proje oluşturulurken hata:', err);
       setError('Proje oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
@@ -107,6 +119,17 @@ const CreateProject = () => {
       setLoading(false);
     }
   };
+
+  if (!isInitialized) {
+    return (
+      <TeacherLayout>
+        <div className="container">
+          <div className="section-title">Yeni Proje Oluştur</div>
+          <div className="loading-message">Yükleniyor...</div>
+        </div>
+      </TeacherLayout>
+    );
+  }
 
   return (
     <TeacherLayout>

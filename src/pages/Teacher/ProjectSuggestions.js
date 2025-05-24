@@ -29,10 +29,23 @@ const ProjectSuggestions = () => {
   const [suggestionErrors, setSuggestionErrors] = useState({});
   const [canApproveSuggestions, setCanApproveSuggestions] = useState(true);
   const [deadlineMessage, setDeadlineMessage] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    checkDeadline();
-    fetchSuggestions();
+    const initialize = async () => {
+      try {
+        await checkDeadline();
+        await fetchSuggestions();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError('Veri yüklenirken bir hata oluştu.');
+      } finally {
+        setIsInitialized(true);
+        setLoading(false);
+      }
+    };
+    
+    initialize();
   }, []);
 
   const checkDeadline = async () => {
@@ -249,7 +262,7 @@ const ProjectSuggestions = () => {
     }
   };
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <TeacherLayout>
         <div className="container">
@@ -333,6 +346,12 @@ const ProjectSuggestions = () => {
                             className="approve-button"
                             onClick={() => handleApprove(suggestion.id)}
                             disabled={!canApproveSuggestions || isDisabled}
+                            style={{ 
+                              cursor: canApproveSuggestions ? 'pointer' : 'not-allowed',
+                              backgroundColor: canApproveSuggestions ? '#28a745' : '#f5f5f5',
+                              color: canApproveSuggestions ? '#ffffff' : '#9e9e9e',
+                              border: 'none'
+                            }}
                           >
                             ONAYLA
                           </button>
@@ -352,6 +371,12 @@ const ProjectSuggestions = () => {
                             className="reject-button"
                             onClick={() => handleReject(suggestion.id)}
                             disabled={!canApproveSuggestions || isDisabled}
+                            style={{ 
+                              cursor: canApproveSuggestions ? 'pointer' : 'not-allowed',
+                              backgroundColor: canApproveSuggestions ? '#dc3545' : '#f5f5f5',
+                              color: canApproveSuggestions ? '#ffffff' : '#9e9e9e',
+                              border: 'none'
+                            }}
                           >
                             REDDET
                           </button>
@@ -372,4 +397,4 @@ const ProjectSuggestions = () => {
   );
 };
 
-export default ProjectSuggestions; 
+export default ProjectSuggestions;
