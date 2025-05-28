@@ -1,0 +1,179 @@
+.yearly-stats {
+  padding: 20px;
+}
+
+.yearly-stats h2 {
+  margin-bottom: 30px;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.year-section {
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.year-header {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.year-header:hover {
+  background-color: #e9ecef;
+}
+
+.year-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.year-content {
+  padding: 20px;
+}
+
+.stats-section {
+  margin-bottom: 30px;
+  overflow-x: auto;
+}
+
+.stats-section:last-child {
+  margin-bottom: 0;
+}
+
+.stats-section h4 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 600px;
+  table-layout: fixed;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  word-wrap: break-word;
+}
+
+/* Sütun genişlikleri */
+table th:nth-child(1),
+table td:nth-child(1) {
+  width: 25%;
+}
+
+table th:nth-child(2),
+table td:nth-child(2) {
+  width: 35%;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+  width: 20%;
+}
+
+table th:nth-child(4),
+table td:nth-child(4) {
+  width: 20%;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+  white-space: nowrap;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 18px;
+  color: #6c757d;
+}
+
+.member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.member-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.member-list li:last-child {
+  border-bottom: none;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .yearly-stats {
+    padding: 10px;
+  }
+
+  .year-content {
+    padding: 15px;
+  }
+
+  .stats-section {
+    margin-bottom: 20px;
+  }
+
+  table {
+    min-width: 500px;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .yearly-stats h2 {
+    font-size: 20px;
+  }
+
+  .year-header h3 {
+    font-size: 16px;
+  }
+
+  .stats-section h4 {
+    font-size: 14px;
+  }
+
+  table {
+    min-width: 400px;
+  }
+
+  th, td {
+    padding: 8px;
+    font-size: 13px;
+  }
+} 
