@@ -39,14 +39,13 @@ function App() {
 
       if (user) {
         try {
-          /*
           if (!user.emailVerified) {
             setUserType('unverified');
             setLoading(false);
             setAuthChecked(true);
             return;
           }
-            */
+        
           const studentDocRef = doc(db, 'ogrenciler', user.email);
           const studentDoc = await getDoc(studentDocRef);
 
@@ -101,11 +100,11 @@ function App() {
 
   const handleProtectedRoute = (requiredRole, component) => {
     if (!user) return <Navigate to="/login" />;
-    /*
+    
     if (userType === 'unverified') {
       return <EmailVerificationWaiting />;
     }
-      */
+    
 
     if (requiredRole === 'teacher' && userType !== 1) {
       return <Navigate to="/" />;

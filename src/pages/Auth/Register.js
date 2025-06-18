@@ -57,7 +57,6 @@ const Register = () => {
       setLoading(false);
     }
   };
-  /*
   if (verificationSent) {
     return (
       <div className="auth-container">
@@ -81,7 +80,6 @@ const Register = () => {
       </div>
     );
   }
-    */
   return (
     <div className="auth-container">
       <div className="logo-container">
